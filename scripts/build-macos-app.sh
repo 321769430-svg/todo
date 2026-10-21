@@ -13,9 +13,14 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <plist version="1.0">
 <dict>
   <key>CFBundleExecutable</key><string>Qingti</string>
+  <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+  <key>CFBundleSignature</key><string>????</string>
+  <key>CFBundleDevelopmentRegion</key><string>zh_CN</string>
   <key>CFBundleIdentifier</key><string>com.yundouzh.qingti</string>
   <key>CFBundleName</key><string>青提</string>
   <key>CFBundlePackageType</key><string>APPL</string>
+  <key>CFBundleSupportedPlatforms</key><array><string>MacOSX</string></array>
+  <key>NSPrincipalClass</key><string>QingtiApplication</string>
   <key>CFBundleShortVersionString</key><string>1.0</string>
   <key>CFBundleVersion</key><string>1</string>
   <key>LSMinimumSystemVersion</key><string>13.0</string>
@@ -24,6 +29,7 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 </dict>
 </plist>
 PLIST
+printf 'APPL????' > "$APP/Contents/PkgInfo"
 
 clang -fobjc-arc -arch arm64 -mmacosx-version-min=13.0 \
   -framework Cocoa -framework WebKit \
@@ -31,5 +37,8 @@ clang -fobjc-arc -arch arm64 -mmacosx-version-min=13.0 \
   -o "$APP/Contents/MacOS/Qingti"
 
 xattr -cr "$APP" 2>/dev/null || true
-codesign --force --deep --sign - "$APP"
+xattr -d com.apple.FinderInfo "$APP" 2>/dev/null || true
+codesign --force --sign - "$APP"
+xattr -d com.apple.FinderInfo "$APP" 2>/dev/null || true
+codesign --verify --strict "$APP"
 echo "Built $APP"

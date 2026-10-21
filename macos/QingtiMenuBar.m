@@ -48,12 +48,21 @@
 }
 @end
 
-int main(void) {
-    @autoreleasepool {
-        NSApplication *application = [NSApplication sharedApplication];
-        QingtiAppDelegate *delegate = [[QingtiAppDelegate alloc] init];
-        application.delegate = delegate;
-        [application run];
+@interface QingtiApplication : NSApplication
+@property(nonatomic, strong) QingtiAppDelegate *retainedDelegate;
+@end
+
+@implementation QingtiApplication
+- (instancetype)init {
+    self = [super init];
+    if (self) {
+        self.retainedDelegate = [[QingtiAppDelegate alloc] init];
+        self.delegate = self.retainedDelegate;
     }
-    return 0;
+    return self;
+}
+@end
+
+int main(int argc, const char *argv[]) {
+    return NSApplicationMain(argc, argv);
 }
